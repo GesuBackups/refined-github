@@ -2,12 +2,15 @@ import React from 'dom-chef';
 import * as pageDetect from 'github-url-detection';
 import {$closestOptional} from 'select-dom';
 
+import {mount} from 'svelte';
+
 import {getNewFeatureName} from '../feature-data.js';
 import features from '../feature-manager.js';
 import {isAnyRefinedGitHubRepo} from '../github-helpers/index.js';
 import {commitTitleInLists} from '../github-helpers/selectors.js';
 import {wrap} from '../helpers/dom-utils.js';
 import {getFeatureUrl} from '../helpers/rgh-links.js';
+import RelatedIssuesCount from '../helpers/rgh-related-issues-count.svelte';
 import observe from '../helpers/selector-observer.js';
 
 function linkifyFeature(possibleFeature: HTMLElement): void {
@@ -21,6 +24,7 @@ function linkifyFeature(possibleFeature: HTMLElement): void {
 	// If the original text is different from the resolved ID, it's an old name
 	const isOldName = originalText !== id;
 	const title = isOldName ? `Now called ${id}` : undefined;
+	let anchorElement: Element | undefined;
 
 	const possibleLink = possibleFeature.firstElementChild ?? possibleFeature;
 	if (possibleLink instanceof HTMLAnchorElement) {
@@ -32,6 +36,9 @@ function linkifyFeature(possibleFeature: HTMLElement): void {
 		if (title) {
 			possibleLink.title = title;
 		}
+
+		// <sup> goes after the <code> element (outside the inner link)
+		anchorElement = possibleFeature;
 	} else if (!$closestOptional('a', possibleFeature)) {
 		// Possible DOM structure:
 		// - <code>
@@ -44,6 +51,19 @@ function linkifyFeature(possibleFeature: HTMLElement): void {
 				title={title}
 			/>,
 		);
+		// After wrap(), possibleFeature.parentElement is the new <a>
+		// Mount after the <a> so <sup> is outside the link
+		anchorElement = possibleFeature.parentElement!;
+	}
+
+	if (anchorElement) {
+		const sup = <sup/>;
+		anchorElement.after(sup);
+		mount(RelatedIssuesCount, {
+			target: sup, props: {
+				featureId: id, labels: {single: '$$', plural: '$$'},
+			},
+		});
 	}
 }
 

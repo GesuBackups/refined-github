@@ -5,6 +5,8 @@ import AlertIcon from 'octicons-plain-react/Alert';
 import CopyIcon from 'octicons-plain-react/Copy';
 import InfoIcon from 'octicons-plain-react/Info';
 
+import {mount} from 'svelte';
+
 import {featuresMeta, getNewFeatureName, getOldFeatureNames} from '../feature-data.js';
 import features from '../feature-manager.js';
 import createBanner from '../github-helpers/banner.js';
@@ -12,6 +14,7 @@ import {isFeaturePrivate} from '../helpers/feature-utils.js';
 import {brokenFeatures} from '../helpers/hotfix.js';
 import openOptions from '../helpers/open-options.js';
 import {createRghIssueLink} from '../helpers/rgh-links.js';
+import RelatedIssuesCount from '../helpers/rgh-related-issues-count.svelte';
 import observe from '../helpers/selector-observer.js';
 import optionsStorage, {isFeatureDisabled} from '../options-storage.js';
 
@@ -26,15 +29,14 @@ function addDescription(infoBanner: HTMLElement, id: string, meta: FeatureMeta |
 				: undefined // The heck!?
 		);
 
-	const conversationsUrl = new URL('https://github.com/refined-github/refined-github/issues');
 	const oldNames = getOldFeatureNames(id);
-	const searchTerms = [id, ...oldNames].map(name => `"${name}"`).join(' OR ');
-	conversationsUrl.searchParams.set('q', `sort:updated-desc is:open (${searchTerms})`);
 
 	const newIssueUrl = new URL('https://github.com/refined-github/refined-github/issues/new');
 	newIssueUrl.searchParams.set('template', '1_bug_report.yml');
 	newIssueUrl.searchParams.set('title', `\`${id}\`: `);
 	newIssueUrl.searchParams.set('labels', 'bug, help wanted');
+
+	const relatedIssuesContainer = <span/>;
 
 	infoBanner.before(
 		// Block and width classes required to avoid margin collapse
@@ -67,7 +69,7 @@ function addDescription(infoBanner: HTMLElement, id: string, meta: FeatureMeta |
 					)}
 					{description && <div dangerouslySetInnerHTML={{__html: description}} className="h3" />}
 					<div className="no-wrap">
-						<a href={conversationsUrl.href} data-turbo-frame="repo-content-turbo-frame">Related issues</a>
+						{relatedIssuesContainer}
 						{' • '}
 						<a href={newIssueUrl.href} data-turbo-frame="repo-content-turbo-frame">Report bug</a>
 						{
@@ -94,6 +96,19 @@ function addDescription(infoBanner: HTMLElement, id: string, meta: FeatureMeta |
 			</div>
 		</div>,
 	);
+
+	mount(RelatedIssuesCount, {
+		target: relatedIssuesContainer,
+		props: {
+			featureId: id,
+			labels: {
+				loading: 'Related issues',
+				single: '1 related issue',
+				plural: '$$ related issues',
+				zero: 'Related issues',
+			},
+		},
+	});
 }
 
 async function getDisabledReason(id: string): Promise<JSX.Element | undefined> {
