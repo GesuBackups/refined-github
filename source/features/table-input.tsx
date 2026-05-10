@@ -9,7 +9,6 @@ import {insertTextIntoField} from 'text-field-edit';
 
 import features from '../feature-manager.js';
 import {actionBar} from '../github-helpers/selectors.js';
-import {isSmallDevice} from '../helpers/dom-utils.js';
 import observe from '../helpers/selector-observer.js';
 import smartBlockWrap from '../helpers/smart-block-wrap.js';
 
@@ -85,11 +84,6 @@ function init(signal: AbortSignal): void {
 void features.add(import.meta.url, {
 	include: [
 		pageDetect.hasRichTextEditor,
-	],
-	exclude: [
-		// TODO: Fix feature https://github.com/refined-github/refined-github/issues/9358
-		// Temporary workaround just for mobile
-		isSmallDevice,
 	],
 	init,
 });
