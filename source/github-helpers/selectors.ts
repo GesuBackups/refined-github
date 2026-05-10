@@ -86,13 +86,16 @@ export const openPrsListLink_ = [
 	[4, 'https://github.com/refined-github/sandbox/issues?q=conflict'],
 ] satisfies UrlMatch[];
 
-export const commentsCountInLists = `
-	:is(.js-issue-row, .js-pinned-issue-list-item)
-	.Link--muted:is(
-		a[aria-label$="comment"],
-		a[aria-label$="comments"]
-	)
-`;
+export const commentsCountInLists = [
+	// Issue list:
+	'div[data-testid="list-row-comments"]',
+	'div[class^="PinnedIssue-module__commentCountContainer"]',
+
+	// PR list
+	// aria-label="1 comment"
+	// aria-label="2 comments"
+	'.js-issue-row a.Link--muted[aria-label*=" comment"]',
+];
 export const commentsCountInLists_ = [
 	[2, 'https://github.com/refined-github/sandbox/labels/bug'],
 ] satisfies UrlMatch[];
@@ -296,3 +299,11 @@ export const conversationCloseEvent_ = [
 
 export const confirmMergeButton = '[data-testid="mergebox-partial"] [class*="ConfirmMerge"] ~ div button:first-child';
 export const confirmMergeButton_ = requiresLogin;
+
+/* NOTE: Must be a hash, not a generic selector */
+export const commentBoxHashPr = '#issue-comment-box';
+export const commentBoxHashPr_ = requiresLogin;
+
+/* NOTE: Must be a hash, not a generic selector */
+export const commentBoxHashIssue = '#react-issue-comment-composer';
+export const commentBoxHashIssue_ = requiresLogin;
