@@ -8,6 +8,7 @@ import css from '@eslint/css';
 import pluginPromise from 'eslint-plugin-promise';
 
 import noOptionalChaining from './eslint-rules/no-optional-chaining.js';
+import cssDocumentation from './eslint-rules/css-documentation.js';
 
 import selectDomRule from './eslint-rules/select-dom.js';
 
@@ -15,6 +16,7 @@ const refinedGithubPlugin = {
 	rules: {
 		'select-dom': selectDomRule,
 		'no-optional-chaining': noOptionalChaining,
+		'css-documentation': cssDocumentation,
 	},
 };
 
@@ -318,6 +320,12 @@ export default defineConfig([
 		files: ['source/features/**'],
 		rules: {
 			'refined-github/no-optional-chaining': 'error',
+		},
+	},
+	{
+		files: ['source/features/github-bugs.css', 'source/refined-github.css'],
+		rules: {
+			'refined-github/css-documentation': 'error',
 		},
 	},
 	{
