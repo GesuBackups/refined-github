@@ -48,8 +48,8 @@ void features.add(import.meta.url, {
 	init,
 });
 
-// TODO: Needs a URL with multiple deployments and deactivated deployments
 /*
 Test URLs:
-https://github.com/fregante/bundle/pull/2
+- All inactive: https://github.com/btkostner/btkostner.io/pull/10
+- Some active: https://github.com/fregante/bundle/pull/6
 */
